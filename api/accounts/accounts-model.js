@@ -1,21 +1,50 @@
-const getAll = () => {
-  // DO YOUR MAGIC
+const db = require('../../data/db-config');
+
+const getAll = async () => {
+  const records = await db.select().from('accounts');
+  return records;
 }
 
-const getById = id => {
-  // DO YOUR MAGIC
+const getById = async (id) => {
+  const record = await db('accounts')
+    .where({
+      id: id
+    })
+    .select();
+
+  return record[0];
 }
 
-const create = account => {
-  // DO YOUR MAGIC
+const isNameAvailable = async (name) => {
+  const count = await db('accounts').count().where({
+    name: name
+  });
+
+  return count[0]['count(*)'] === 0;
 }
 
-const updateById = (id, account) => {
-  // DO YOUR MAGIC
+const create = async account => {
+  const result = await db('accounts').insert({
+    name: account.name,
+    budget: account.budget,
+  });
+  return result;
 }
 
-const deleteById = id => {
-  // DO YOUR MAGIC
+const updateById = async (id, account) => {
+  const result = await db('accounts').where({ id })
+    .update({
+      name: account.name,
+      budget: account.budget
+    });
+
+  return result;
+}
+
+const deleteById = async id => {
+  const result = await db('accounts').where({ id }).delete();
+
+  return result;
 }
 
 module.exports = {
@@ -24,4 +53,5 @@ module.exports = {
   create,
   updateById,
   deleteById,
+  isNameAvailable,
 }
